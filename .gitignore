@@ -1,0 +1,4 @@
+section 12.code-workspace
+node_modules
+.vscode
+.env
