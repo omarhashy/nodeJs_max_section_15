@@ -14,8 +14,11 @@
     "nodemon": "^3.1.7"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
+    "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^5.0.0",
+    "csurf": "^1.11.0",
     "ejs": "^3.1.10",
     "express": "^4.21.1",
     "express-handlebars": "^8.0.1",
@@ -23,6 +26,8 @@
     "mongodb": "^6.9.0",
     "mongoose": "^8.7.1",
     "mysql2": "^3.11.3",
+    "nodemailer": "^6.9.15",
+    "nodemailer-sendgrid-transport": "^0.2.0",
     "pug": "^3.0.3",
     "sequelize": "^6.37.4"
   }
