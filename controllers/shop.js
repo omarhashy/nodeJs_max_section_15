@@ -4,14 +4,37 @@ const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit");
 
+const ITEMS_PER_PAGE = 2;
+
 exports.getProducts = (req, res, next) => {
+const page = Number(req.query.page) || 1;
+  
+  // if (!isNaN()) page = Number(req.query.page);
+  // console.log(page);
+  
+  let totalItems;
   Product.find()
+    .countDocuments()
+    .then((numProducts) => {
+      totalItems = numProducts;
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
-      console.log(products);
       res.render("shop/product-list", {
         prods: products,
-        pageTitle: "All Products",
+        pageTitle: "Products",
         path: "/products",
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        PreviousPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+
+        // isAuthenticated: req.session.isLoggedIn,
+        // csrfToken: req.csrfToken(),
       });
     })
     .catch((err) => {
@@ -39,12 +62,32 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
+  const page = Number(req.query.page) || 1;
+  
+  // if (!isNaN()) page = Number(req.query.page);
+  // console.log(page);
+  
+  let totalItems;
   Product.find()
+    .countDocuments()
+    .then((numProducts) => {
+      totalItems = numProducts;
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
       res.render("shop/index", {
         prods: products,
         pageTitle: "Shop",
         path: "/",
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        PreviousPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+
         // isAuthenticated: req.session.isLoggedIn,
         // csrfToken: req.csrfToken(),
       });
@@ -175,19 +218,23 @@ exports.getInvoice = (req, res, next) => {
       pdfDoc.text("------------------------------------------------");
       let total = 0;
       order.products.forEach((prod) => {
-        pdfDoc.fontSize(14).text(
-          prod.product.title +
-            " - " +
-            prod.quantity +
-            " x " +
-            "$" +
-            prod.product.price
-        );
+        pdfDoc
+          .fontSize(14)
+          .text(
+            prod.product.title +
+              " - " +
+              prod.quantity +
+              " x " +
+              "$" +
+              prod.product.price
+          );
         total += prod.product.price;
       });
-      pdfDoc.fontSize(26).text("------------------------------------------------");
+      pdfDoc
+        .fontSize(26)
+        .text("------------------------------------------------");
 
-      pdfDoc.text(`Total Price: $${total}`)
+      pdfDoc.text(`Total Price: $${total}`);
 
       pdfDoc.end();
       // fs.readFile(invoicePath, (err, data) => {
