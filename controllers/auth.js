@@ -95,7 +95,6 @@ exports.postLogin = (req, res, next) => {
         .compare(password, user.password)
         .then((doMatch) => {
           if (doMatch) {
-            req.session.bestDevelope = "Omar Hashy";
             req.session.isLoggedIn = true;
             req.session.user = user;
             return req.session.save((err) => {
